@@ -1,0 +1,8 @@
+target/
+build/
+.idea/
+.settings/
+.project
+.classpath
+.DS_Store
+cqrsxapi.iml
