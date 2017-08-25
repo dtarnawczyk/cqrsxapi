@@ -19,7 +19,12 @@
                                 name = "optimizer",
                                 value = "pooled-lo"
                         )
-                })
+                }),
+        @GenericGenerator(name = Constants.STATEMENT_ID,
+                strategy = "foreign",
+                parameters =
+                @Parameter(name = "property", value = "statement")
+        )
 })
 @NamedQueries(value = {
         @NamedQuery(name = "getStatements", query = "SELECT s FROM Statement s")

@@ -28,20 +28,6 @@ public class DBTestCase {
         entityManager = factory.createEntityManager();
     }
 
-    @Before
-    public void initDataBase() {
-        Session session = entityManager.unwrap(Session.class);
-        session.doWork(connection ->  {
-            try {
-                File script = new File(getClass().getResource("/test_data.sql").getFile());
-                RunScript.execute(connection, new FileReader(script));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Could not initialize database with script");
-            }
-
-        });
-    }
-
     @AfterClass
     public static void closeEntityManager() {
         entityManager.clear();
