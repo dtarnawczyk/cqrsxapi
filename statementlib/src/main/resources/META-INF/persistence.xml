@@ -14,7 +14,7 @@
             <property name="javax.persistence.jdbc.password" value="test" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.hbm2ddl.auto" value="update" />
-            <property name="hibernate.archive.autodetection" value="class"/>
+            <!--<property name="hibernate.archive.autodetection" value="class"/>-->
         </properties>
 
     </persistence-unit>
