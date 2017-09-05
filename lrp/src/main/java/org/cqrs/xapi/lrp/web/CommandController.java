@@ -2,10 +2,10 @@ package org.cqrs.xapi.lrp.web;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
 import org.cqrs.xapi.lrp.domain.Statement;
 import org.cqrs.xapi.lrp.domain.event.CreateStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.DeleteStatementEvent;
-import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
 import org.cqrs.xapi.lrp.service.SendEventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

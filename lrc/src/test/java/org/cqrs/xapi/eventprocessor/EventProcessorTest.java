@@ -1,21 +1,17 @@
-package org.cqrs.xapi.eventprocessor.processor;
+package org.cqrs.xapi.eventprocessor;
 
-import org.cqrs.xapi.eventprocessor.repository.StatementRepository;
-import org.cqrs.xapi.eventprocessor.repository.config.RepositoryConfiguration;
-import org.cqrs.xapi.eventprocessor.service.EventStatementWriteService;
-import org.cqrs.xapi.eventprocessor.service.config.ProcessorConfiguration;
-import org.cqrs.xapi.eventprocessor.service.processor.EventProcessor;
-import org.cqrs.xapi.eventprocessor.service.processor.ReceiveEventService;
 import org.cqrs.xapi.lrp.domain.*;
 import org.cqrs.xapi.lrp.domain.event.CreateStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.DeleteStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
+import org.cqrs.xapi.eventprocessor.repository.StatementRepository;
+import org.cqrs.xapi.eventprocessor.service.processor.ReceiveEventService;
+import org.cqrs.xapi.lrc.LRCApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
@@ -27,14 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {
-        RepositoryConfiguration.class,
-        EventProcessor.class,
-        EventStatementWriteService.class,
-        StatementRepository.class,
-        ProcessorConfiguration.class})
+@SpringBootTest(classes = LRCApplication.class)
 @DataJpaTest
-@DirtiesContext
 public class EventProcessorTest {
 
     @Autowired

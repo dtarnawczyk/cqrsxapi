@@ -1,6 +1,5 @@
 package org.cqrs.xapi.lrp.domain;
 
-import org.cqrs.xapi.lrp.domain.test.DBTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

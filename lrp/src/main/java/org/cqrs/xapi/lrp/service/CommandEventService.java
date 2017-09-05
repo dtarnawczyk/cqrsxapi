@@ -3,9 +3,9 @@ package org.cqrs.xapi.lrp.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cqrs.xapi.lrp.domain.event.CreateStatementEvent;
-import org.cqrs.xapi.lrp.domain.event.DeleteStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
 import org.cqrs.xapi.lrp.service.source.StatementEventSource;
+import org.cqrs.xapi.lrp.domain.event.DeleteStatementEvent;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 

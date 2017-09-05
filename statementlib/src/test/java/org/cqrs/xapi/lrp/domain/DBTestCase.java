@@ -1,4 +1,4 @@
-package org.cqrs.xapi.lrp.domain.test;
+package org.cqrs.xapi.lrp.domain;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

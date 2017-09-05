@@ -19,7 +19,6 @@
         <module>lrp</module>
         <module>lrc</module>
         <module>api</module>
-        <module>eventprocessor</module>
     </modules>
 
     <parent>

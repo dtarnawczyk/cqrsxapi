@@ -1,4 +1,4 @@
-package org.cqrs.xapi.lrp.service;
+package org.cqrs.xapi.lrc.service;
 
 import org.cqrs.xapi.lrp.domain.Statement;
 
