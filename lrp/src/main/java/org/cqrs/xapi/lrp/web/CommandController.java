@@ -28,6 +28,7 @@ public class CommandController {
         if(statement.getId() == null){
             statement.setId(UUID.randomUUID().toString());
         }
+
         CreateStatementEvent event = new CreateStatementEvent(statement);
         sendService.sendCreateEvent(event);
 
@@ -50,9 +51,6 @@ public class CommandController {
 
         log.info(statement.toString());
 
-        if(statement.getId() == null){
-            statement.setId(UUID.randomUUID().toString());
-        }
         DeleteStatementEvent event = new DeleteStatementEvent(statement);
         sendService.sendDeleteEvent(event);
 

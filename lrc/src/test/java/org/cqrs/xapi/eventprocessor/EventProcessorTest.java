@@ -1,12 +1,14 @@
 package org.cqrs.xapi.eventprocessor;
 
+import org.cqrs.xapi.eventprocessor.repository.StatementRepository;
+import org.cqrs.xapi.eventprocessor.service.processor.ReceiveEventService;
+import org.cqrs.xapi.lrc.LRCApplication;
 import org.cqrs.xapi.lrp.domain.*;
 import org.cqrs.xapi.lrp.domain.event.CreateStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.DeleteStatementEvent;
 import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
-import org.cqrs.xapi.eventprocessor.repository.StatementRepository;
-import org.cqrs.xapi.eventprocessor.service.processor.ReceiveEventService;
-import org.cqrs.xapi.lrc.LRCApplication;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -33,48 +35,93 @@ public class EventProcessorTest {
     @Autowired
     private StatementRepository repository;
 
+    private String testStatementId;
+    private Statement testStatement;
+
+    @Before
+    public void saveTestStatement() {
+        testStatementId = UUID.randomUUID().toString();
+        testStatement = prepareStatement(testStatementId);
+        repository.save(testStatement);
+    }
+
+    @After
+    public void removeTestStatement() {
+        if(repository.findOne(testStatementId) != null)
+            repository.delete(testStatementId);
+    }
+
     @Test
     public void whenReceivingCreateEvent_thenStatementWriteServiceShouldSave () {
 
         // Given
-        String testStatementId = UUID.randomUUID().toString();
-        Statement testStatement = prepareStatement(testStatementId);
+        String statementId = UUID.randomUUID().toString();
+        Statement testStatement = prepareStatement(statementId);
 
         // When
         CreateStatementEvent createStatementEvent = new CreateStatementEvent(testStatement);
         receiveEventService.receiveCreateEvent(createStatementEvent);
 
         // Then
-        Statement foundStatement = repository.findOne(testStatementId);
+        Statement foundStatement = repository.findOne(statementId);
         assertNotNull(foundStatement);
-        assertEquals(testStatementId, foundStatement.getId());
+        assertEquals(statementId, foundStatement.getId());
     }
 
     @Test
-    public void whenReceiveUpdateEvent_thenStatementWriteServiceShouldUpdate () {
-
-        // Given
-        String statementId = UUID.randomUUID().toString();
-        repository.save(prepareStatement(statementId));
-
+    public void whenReceiveUpdateActorEvent_thenStatementWriteServiceShouldUpdateActor () {
         // When
-        Statement statement = repository.findOne(statementId);
         String updatedActorsName = "Updated test actor";
-        statement.getActor().setName(updatedActorsName);
-        UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(statement);
-        receiveEventService.receiveUpdateEvent(updateStatementEvent);
+        testStatement.getActor().setName(updatedActorsName);
+
+        UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
+        receiveEventService.receiveUpdateActorEvent(updateStatementEvent);
 
         // Then
-        Statement foundStatement = repository.findOne(statementId);
-        assertEquals(updatedActorsName, statement.getActor().getName());
+        Statement foundStatement = repository.findOne(testStatementId);
+        assertEquals(updatedActorsName, foundStatement.getActor().getName());
+    }
+
+    @Test
+    public void whenReceiveUpdateVerbEvent_thenStatementWriteServiceShouldUpdateVerb () {
+        // When
+        Map<String, String> testDisplay = Collections.unmodifiableMap(Stream.of(
+                new AbstractMap.SimpleEntry<>("pl_PL", "wpis"),
+                new AbstractMap.SimpleEntry<>("en_EN", "entry"))
+                .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+        testStatement.getVerb().setDisplay(testDisplay);
+
+        UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
+        receiveEventService.receiveUpdateVerbEvent(updateStatementEvent);
+
+        // Then
+        Statement foundStatement = repository.findOne(testStatementId);
+        Map<String, String> currentMap = foundStatement.getVerb().getDisplay();
+        assertNotNull(currentMap);
+        assertEquals(testDisplay.size(), currentMap.size());
+        for(Map.Entry<String,String> value : testDisplay.entrySet()){
+            String actualValue = currentMap.get(value.getKey());
+            assertNotNull(actualValue);
+            assertEquals(value.getValue(), actualValue);
+        }
+    }
+
+    @Test
+    public void whenReceiveUpdateObjectEvent_thenStatementWriteServiceShouldUpdateObject () {
+        // When
+        String updatedObjectType = "crossword";
+        testStatement.getObject().setObjectType(updatedObjectType);
+
+        UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
+        receiveEventService.receiveUpdateObjectEvent(updateStatementEvent);
+
+        // Then
+        Statement foundStatement = repository.findOne(testStatementId);
+        assertEquals(updatedObjectType, foundStatement.getObject().getObjectType());
     }
 
     @Test
     public void whenReceiveDeleteEvent_thenStatementWriteServiceShouldDelete () {
-
-        // Given
-        String testStatementId = UUID.randomUUID().toString();
-        repository.save(prepareStatement(testStatementId));
 
         // When
         Statement statement = repository.findOne(testStatementId);
@@ -121,7 +168,6 @@ public class EventProcessorTest {
         Actor testActor = new Actor(testStatement);
         testActor.setName(actorsName);
         testActor.setObjectType(actorsObjectType);
-
         testActor.setInverseFunctionalIdentifier(inverseFunctionalIdentifier);
 
         testStatement.setActor(testActor);

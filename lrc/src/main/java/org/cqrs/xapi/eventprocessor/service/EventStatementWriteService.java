@@ -19,14 +19,29 @@ public class EventStatementWriteService implements StatementWriteService {
 
     @Override
     public void saveStatement(Statement statement) {
-        log.info("Saving statement:" + statement);
+        log.info("Saving Statement:" + statement);
         repository.save(statement);
     }
 
     @Override
-    public void updateStatement(Statement statement) {
-        log.info("Updating statement:" + statement);
-        repository.save(statement);
+    public void updateStatementActor(Statement statementDto) {
+        log.info("Updating Statement Actor:" + statementDto);
+        Statement statement = repository.findOne(statementDto.getId());
+        statement.setActor(statementDto.getActor());
+    }
+
+    @Override
+    public void updateStatementVerb(Statement statementDto) {
+        log.info("Updating Statement Verb:" + statementDto);
+        Statement statement = repository.findOne(statementDto.getId());
+        statement.setVerb(statementDto.getVerb());
+    }
+
+    @Override
+    public void updateStatementXapiObject(Statement statementDto) {
+        log.info("Updating Statement XapiObject:" + statementDto);
+        Statement statement = repository.findOne(statementDto.getId());
+        statement.setObject(statementDto.getObject());
     }
 
     @Override

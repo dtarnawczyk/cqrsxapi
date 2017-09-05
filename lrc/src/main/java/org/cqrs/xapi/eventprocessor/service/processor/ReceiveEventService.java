@@ -6,6 +6,8 @@ import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
 
 public interface ReceiveEventService {
     void receiveCreateEvent(CreateStatementEvent event);
-    void receiveUpdateEvent(UpdateStatementEvent event);
+    void receiveUpdateActorEvent(UpdateStatementEvent event);
+    void receiveUpdateVerbEvent(UpdateStatementEvent event);
+    void receiveUpdateObjectEvent(UpdateStatementEvent event);
     void receiveDeleteEvent(DeleteStatementEvent event);
 }
