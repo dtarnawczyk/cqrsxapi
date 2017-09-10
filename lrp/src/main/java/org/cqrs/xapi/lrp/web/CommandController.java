@@ -23,11 +23,11 @@ public class CommandController {
     @ResponseStatus(HttpStatus.CREATED)
     public CreateStatementEvent saveStatement(@RequestBody Statement statement){
 
-        log.info(statement.toString());
-
         if(statement.getId() == null){
             statement.setId(UUID.randomUUID().toString());
         }
+
+        log.info(statement.toString());
 
         CreateStatementEvent event = new CreateStatementEvent(statement);
         sendService.sendCreateEvent(event);
@@ -35,13 +35,19 @@ public class CommandController {
         return event;
     }
 
+    /**
+     * Sends update statement request. Withing a Header attribute value = "type" there are three possible option: "actor", "verb" or "object"
+     * @param statement
+     * @param updateType (actor/verb/object)
+     * @return update event
+     */
     @PutMapping("/statement")
-    public UpdateStatementEvent updateStatement(@RequestBody Statement statement){
+    public UpdateStatementEvent updateStatement(@RequestBody Statement statement, @RequestHeader(value="type", defaultValue="actor") String updateType){
 
         log.info(statement.toString());
 
         UpdateStatementEvent event = new UpdateStatementEvent(statement);
-        sendService.sendUpdateEvent(event);
+        sendService.sendUpdateEvent(event, updateType);
 
         return event;
     }

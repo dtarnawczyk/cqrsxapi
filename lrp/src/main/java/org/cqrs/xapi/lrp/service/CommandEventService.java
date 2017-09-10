@@ -22,8 +22,8 @@ public class CommandEventService implements SendEventService {
     }
 
     @Override
-    public void sendUpdateEvent(UpdateStatementEvent event) {
-        source.updateStatement().send(MessageBuilder.withPayload(event).build());
+    public void sendUpdateEvent(UpdateStatementEvent event, String updateType) {
+        source.updateStatement().send(MessageBuilder.withPayload(event).setHeader("type", updateType).build());
     }
 
     @Override

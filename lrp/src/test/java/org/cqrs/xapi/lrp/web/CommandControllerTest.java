@@ -63,6 +63,7 @@ public class CommandControllerTest {
         Statement testStatement = prepareStatement(testStatementId);
         mockMvc.perform(
                 put("/statement")
+                        .header("type","actor")
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .content(objectMapper.writeValueAsString(testStatement)))
                 .andExpect(status().isOk())

@@ -14,6 +14,7 @@ import org.cqrs.xapi.lrp.domain.event.UpdateStatementEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 
 import java.util.UUID;
 
@@ -34,27 +35,25 @@ public class EventProcessor implements ReceiveEventService {
     }
 
     @Override
-    @StreamListener(target = StatementEventSink.UPDATE, condition = "headers['type']=='actor'")
-    public void receiveUpdateActorEvent(UpdateStatementEvent event) {
+    @StreamListener(target = StatementEventSink.UPDATE)
+    public void receiveUpdateEvent(Message<UpdateStatementEvent> eventMessage) {
+        String updateType = (String) eventMessage.getHeaders().get("type");
+        UpdateStatementEvent event = eventMessage.getPayload();
         log.info("Received update actor event id: "+ event.getId() + ", created at: "+ event.getCreatedAt());
-        Statement statement = prepareStatement(event.getStatement());
-        statementWriteService.updateStatementActor(statement);
-    }
-
-    @Override
-    @StreamListener(target = StatementEventSink.UPDATE, condition = "headers['type']=='verb'")
-    public void receiveUpdateVerbEvent(UpdateStatementEvent event) {
-        log.info("Received update verb event id: "+ event.getId() + ", created at: "+ event.getCreatedAt());
-        Statement statement = prepareStatement(event.getStatement());
-        statementWriteService.updateStatementVerb(statement);
-    }
-
-    @Override
-    @StreamListener(target = StatementEventSink.UPDATE, condition = "headers['type']=='object'")
-    public void receiveUpdateObjectEvent(UpdateStatementEvent event) {
-        log.info("Received update object event id: "+ event.getId() + ", created at: "+ event.getCreatedAt());
-        Statement statement = prepareStatement(event.getStatement());
-        statementWriteService.updateStatementXapiObject(statement);
+        Statement statement = event.getStatement();
+        switch(updateType){
+            case "actor":
+                statementWriteService.updateStatementActor(statement);
+                break;
+            case "object":
+                statementWriteService.updateStatementXapiObject(statement);
+                break;
+            case "verb":
+                statementWriteService.updateStatementVerb(statement);
+                break;
+            default:
+                statementWriteService.updateStatementActor(statement);
+        }
     }
 
     @Override

@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
@@ -75,7 +77,10 @@ public class EventProcessorTest {
         testStatement.getActor().setName(updatedActorsName);
 
         UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
-        receiveEventService.receiveUpdateActorEvent(updateStatementEvent);
+        Message<UpdateStatementEvent> message = MessageBuilder
+                .withPayload(updateStatementEvent)
+                .setHeader("type", "actor").build();
+        receiveEventService.receiveUpdateEvent(message);
 
         // Then
         Statement foundStatement = repository.findOne(testStatementId);
@@ -92,7 +97,10 @@ public class EventProcessorTest {
         testStatement.getVerb().setDisplay(testDisplay);
 
         UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
-        receiveEventService.receiveUpdateVerbEvent(updateStatementEvent);
+        Message<UpdateStatementEvent> message = MessageBuilder
+                .withPayload(updateStatementEvent)
+                .setHeader("type", "verb").build();
+        receiveEventService.receiveUpdateEvent(message);
 
         // Then
         Statement foundStatement = repository.findOne(testStatementId);
@@ -113,7 +121,10 @@ public class EventProcessorTest {
         testStatement.getObject().setObjectType(updatedObjectType);
 
         UpdateStatementEvent updateStatementEvent = new UpdateStatementEvent(testStatement);
-        receiveEventService.receiveUpdateObjectEvent(updateStatementEvent);
+        Message<UpdateStatementEvent> message = MessageBuilder
+                .withPayload(updateStatementEvent)
+                .setHeader("type", "object").build();
+        receiveEventService.receiveUpdateEvent(message);
 
         // Then
         Statement foundStatement = repository.findOne(testStatementId);
